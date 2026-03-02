@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    html{
+      -webkit-text-size-adjust: 100%;
+      color-scheme: light;
+    }
+
+    html, body{
+  margin:0;
+  padding:0;
+  width:100%;
+  min-height:100%;
+  background:#0f1115;
+}
+
+    body{
+  margin:0;
+  padding:0;
+  background:#0f1115;
+  font-family:'Poppins', sans-serif;
+}
+
+ .container{
+  width:100%;
+  min-height:100vh;
+  padding:30px 0 60px 0; /* quitamos laterales */
+  box-sizing:border-box;
+}
+
+ .card{
+  width:100%;
+  text-align:center;
+  padding:0 18px;
+  box-sizing:border-box;
+}
+
+    .title, .devocional-title{
+      font-family:'Cinzel', serif;
+      font-size:50px;
+      font-weight:700;
+      letter-spacing:4px;
+      color:#ffffff;
+      margin-bottom:20px;
+    }
+
+    input[type="tel"]{
+      width:100%;
+      padding:22px;
+      font-size:28px;
+      border-radius:16px;
+      border:1px solid #ddd;
+      background:#ffffff;
+      color:#000000;
+      text-align:center;
+      margin-bottom:35px;
+    }
+
+    button{
+      width:100%;
+      padding:18px;
+      font-size:20px;
+      border-radius:14px;
+      border:none;
+      background:#2f7df6;
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+      margin-top:10px;
+    }
+
+    .error{
+      margin-top:20px;
+      color:#ff4d4d;
+      font-size:18px;
+    }
+
+    .hidden{
+      display:none;
+    }
+
+    .usuario-nombre{
+      font-size:28px;
+      margin:20px 0;
+      color:#9ca3af;
+    }
+
+    .fecha-container input{
+      width:100%;
+      padding:18px;
+      font-size:20px;
+      background:#ffffff;
+      color:#000000;
+      border-radius:14px;
+      border:1px solid #ddd;
+      text-align:center;
+    }
+
+    .lecturas-container{
+      margin-top:30px;
+    }
+
+    .titulo-lecturas{
+      font-family:'Cinzel', serif;
+      font-size:24px;
+      color:#ffffff;
+      margin-bottom:20px;
+    }
+
+    .lecturas-box{
+      width:100%;
+      min-height:120px;
+      padding:15px;
+      border-radius:14px;
+      border:1px solid #ddd;
+      background:#ffffff;
+      color:#000000;
+      text-align:left;
+      font-size:18px;
+    }
+
+    .lecturas-box a{
+      color:#000000;
+      font-weight:600;
+      text-decoration:none;
+    }
+
+    .lecturas-box a:hover{
+      text-decoration:underline;
+    }
+
+    .reflexion-container{
+      margin-top:30px;
+      text-align:left;
+    }
+
+    .reflexion-container h3{
+      font-family:'Cinzel', serif;
+      color:#ffffff;
+      margin-bottom:15px;
+      font-size:22px;
+    }
+
+    .reflexion-container textarea{
+      width:100%;
+      min-height:160px;
+      padding:16px;
+      font-size:18px;
+      border-radius:14px;
+      border:1px solid #ddd;
+      background:#ffffff;
+      color:#000000;
+      resize:vertical;
+    }
+
+
+/* =============================== */
+/* ESTILO APP MÓVIL MODERNA */
+/* =============================== */
+
+.title, .devocional-title{
+  font-size:clamp(42px, 8vw, 64px);
+}
+
+.usuario-nombre{
+  font-size:clamp(20px, 4.5vw, 32px);
+}
+
+button{
+  border-radius:18px;
+}
+
+.lecturas-box,
+.reflexion-container textarea{
+  border-radius:18px;
+}
+
+@media screen and (min-width: 900px){
+
+  .container{
+    max-width:500px;
+    margin:0 auto;
+  }
+
+}
+
+body{
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.reflexion-container h3{
+  text-align:center;
+}
+
+.toast{
+  position:fixed;
+  bottom:30px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(0,0,0,0.85);
+  color:#fff;
+  padding:14px 22px;
+  border-radius:16px;
+  font-size:14px;
+  opacity:0;
+  transition:all .3s ease;
+  z-index:9999;
+  backdrop-filter:blur(10px);
+}
+
+.toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+#pin{
+  font-size:32px;
+  padding:20px;
+  text-align:center;
+  letter-spacing:10px;
+  border-radius:18px;
+}
+
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <div id="login" class="card">
+    <div class="title">MI DEVOCIONAL</div>
+    <input type="password" id="pin" placeholder="••••" inputmode="numeric">
+    <button onclick="login()">INGRESAR</button>
+    <div id="error" class="error"></div>
+  </div>
+
+  <!-- DEVOCIONAL -->
+  <div id="devocional" class="card hidden">
+
+    <div class="devocional-title">MI DEVOCIONAL</div>
+    <div id="nombreUsuario" class="usuario-nombre"></div>
+
+    <div style="margin-bottom:25px;">
+      <button onclick="abrirMetas()">Ingresar Objetivos y Metas Mensuales</button>
+    </div>
+
+    <div class="fecha-container">
+      <input type="date" id="fechaDevocional">
+    </div>
+
+    <div class="lecturas-container">
+      <h3 class="titulo-lecturas">Lecturas del Día</h3>
+      <div id="lecturasDelDia" class="lecturas-box"></div>
+    </div>
+
+    <!-- REFLEXION -->
+    <div class="reflexion-container">
+      <h3 style="text-align:center;">Reflexión del Día</h3>
+      <textarea id="reflexionDia"></textarea>
+      <button id="btnReflexion" onclick="accionReflexion()">Guardar</button>
+    </div>
+
+  </div>
+
+  <!-- NUEVA PANTALLA METAS (NO TOCAR) -->
+  <div id="metasMensuales" class="card hidden"></div>
+
+</div>
+const API_URL = "https://script.google.com/macros/s/AKfycbyHc1T5UfVffjSJKJQKRIsrlwHvwYySwrI9BsrY4v_b75so3NSdfFSFChnKlZxdK8Wg/exec";
+<script>
+
+let usuarioActual = "";
+
+function login(){
+
+  const pin = document.getElementById("pin").value.trim();
+  const error = document.getElementById("error");
+
+  if(pin === ""){
+    error.innerText = "Ingresa tu PIN";
+    return;
+  }
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"validarPIN",
+      pin:pin
+    })
+  })
+  .then(res=>res.json())
+  .then(respuesta=>{
+
+    if(respuesta && respuesta.valido){
+
+      usuarioActual = respuesta.nombre;
+
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("devocional").classList.remove("hidden");
+
+      document.getElementById("nombreUsuario").innerText = respuesta.nombre;
+
+      const hoy = new Date();
+      const year = hoy.getFullYear();
+      const month = String(hoy.getMonth()+1).padStart(2,'0');
+      const day = String(hoy.getDate()).padStart(2,'0');
+
+      const fechaInput = document.getElementById("fechaDevocional");
+      fechaInput.value = `${year}-${month}-${day}`;
+
+      fechaInput.onchange = function(){
+        cargarLecturas();
+        cargarReflexion();
+      };
+
+      cargarLecturas();
+      cargarReflexion();
+
+    }else{
+      error.innerText = "PIN incorrecto";
+    }
+
+  })
+  .catch(()=>{
+    error.innerText = "Error de conexión";
+  });
+
+}
+
+function cargarLecturas(){
+
+  const fecha = document.getElementById("fechaDevocional").value;
+  const contenedor = document.getElementById("lecturasDelDia");
+
+  contenedor.innerHTML = "Cargando...";
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"obtenerLecturas",
+      fecha:fecha
+    })
+  })
+  .then(res=>res.json())
+  .then(respuesta=>{
+
+    if(!respuesta || respuesta.length === 0){
+      contenedor.innerHTML = "No hay Lecturas Registradas en Este Día";
+      return;
+    }
+
+    let html = "";
+
+    if(respuesta[0].plan){
+      html += `
+        <div style="margin-bottom:15px;">
+          <h3 style="margin:0; font-weight:bold;">
+            📖 Plan: ${respuesta[0].plan.replaceAll("_"," ")}
+          </h3>
+          <hr style="margin-top:5px;">
+        </div>
+      `;
+    }
+
+    for(let i=0; i<respuesta.length; i++){
+      html += `
+        <p style="margin:8px 0;">
+          📖 <a href="${respuesta[i].url}" target="_blank">
+            ${respuesta[i].lectura}
+          </a>
+        </p>
+      `;
+    }
+
+    contenedor.innerHTML = html;
+
+  })
+  .catch(()=>{
+    contenedor.innerHTML = "No hay Lecturas Registradas en Este Día";
+  });
+
+}
+
+function cargarReflexion(){
+
+  const fecha = document.getElementById("fechaDevocional").value;
+  const textarea = document.getElementById("reflexionDia");
+  const boton = document.getElementById("btnReflexion");
+
+  textarea.value = "Cargando...";
+  textarea.disabled = true;
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"obtenerReflexion",
+      nombre:usuarioActual,
+      fecha:fecha
+    })
+  })
+  .then(res=>res.json())
+  .then(respuesta=>{
+
+    if(respuesta && respuesta !== ""){
+      textarea.value = respuesta;
+      textarea.disabled = true;
+      boton.innerText = "Actualizar Reflexión";
+    } else {
+      textarea.value = "";
+      textarea.disabled = false;
+      boton.innerText = "Guardar";
+    }
+
+  });
+
+}
+
+function accionReflexion(){
+
+  const textarea = document.getElementById("reflexionDia");
+  const boton = document.getElementById("btnReflexion");
+  const fecha = document.getElementById("fechaDevocional").value;
+
+  if(boton.innerText === "Actualizar Reflexión"){
+    textarea.disabled = false;
+    boton.innerText = "Guardar";
+    textarea.focus();
+    return;
+  }
+
+  const comentario = textarea.value.trim();
+
+  if(comentario === ""){
+    alert("Debe escribir una reflexión.");
+    return;
+  }
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"guardarReflexion",
+      nombre:usuarioActual,
+      fecha:fecha,
+      comentario:comentario
+    })
+  })
+  .then(res=>res.json())
+  .then(ok=>{
+
+    if(ok){
+      textarea.disabled = true;
+      boton.innerText = "Actualizar Reflexión";
+      alert("Reflexión guardada correctamente.");
+    } else {
+      alert("Error al guardar.");
+    }
+
+  });
+
+}
+
+/* ========= METAS ========= */
+
+function abrirMetas(){
+  document.getElementById("devocional").classList.add("hidden");
+  const cont = document.getElementById("metasMensuales");
+  cont.classList.remove("hidden");
+  cont.innerHTML = generarHTMLMetas();
+}
+
+function generarHTMLMetas(){
+
+  const hoy = new Date();
+  const mes = String(hoy.getMonth()+1).padStart(2,'0');
+  const anio = hoy.getFullYear();
+
+  return `
+  <div class="devocional-title">MI DEVOCIONAL</div>
+  <div class="usuario-nombre">${usuarioActual}</div>
+
+  <div style="margin:20px 0;">
+    <select id="mesMeta" style="width:100%; padding:15px; font-size:18px;">
+      <option value="${mes}/${anio}">${mes}/${anio}</option>
+    </select>
+  </div>
+
+  <h3 style="text-align:center; color:white; font-size:22px;">
+ANTES DE EMPEZAR EL MES
+</h3>
+  <p style="text-align:center; font-size:18px; margin-bottom:25px; color:white;">
+    ¿Qué quiero alcanzar con Dios?
+  </p>
+
+  ${crearCampo("Objetivo Mensual","objetivo")}
+  ${crearCampo("Personal","personal")}
+  ${crearCampo("Familiar","familiar")}
+  ${crearCampo("Deportivo","deportivo")}
+  ${crearCampo("Financiero","financiero")}
+  ${crearCampo("Intelectual","intelectual")}
+  ${crearCampo("Laboral","laboral")}
+  ${crearCampo("Gigantes que debo Derrotar","gigantes")}
+
+  <button id="btnGuardarInicio" onclick="guardarInicioMes()">Guardar</button>
+
+  <hr style="margin:40px 0;">
+
+  <h3 style="text-align:center; color:white; font-size:22px;">
+AL FINALIZAR EL MES
+</h3>
+
+  ${crearCampo("¿A dónde me llevó Dios? ¿Qué victorias tuve?","final1")}
+  ${crearCampo("¿Qué o cómo lo hizo Dios?","final2")}
+  ${crearCampo("¿Cumplí mi meta? ¿Por qué?","final3")}
+  ${crearCampo("¿Qué debo continuar y mejorar el siguiente mes?","final4")}
+  <button id="btnGuardarFinal" onclick="guardarFinalMes()">Guardar</button>
+  
+  <button onclick="regresarDevocional()">Regresar a MI DEVOCIONAL</button>
+  `;
+}
+
+function crearCampo(label,id){
+  return `
+    <div style="margin-bottom:25px;">
+      <label style="
+        display:block;
+        color:white;
+        font-size:18px;
+        font-weight:600;
+        margin-bottom:8px;
+      ">
+        ${label}
+      </label>
+
+      <textarea 
+        id="${id}" 
+        style="
+          width:100%;
+          min-height:110px;
+          padding:15px;
+          border-radius:14px;
+          font-size:16px;
+          color:black;
+          font-family:inherit;
+        ">
+      </textarea>
+    </div>
+  `;
+}
+
+function regresarDevocional(){
+  document.getElementById("metasMensuales").classList.add("hidden");
+  document.getElementById("devocional").classList.remove("hidden");
+}
+
+function guardarInicioMes(){
+
+  const campos = ["objetivo","personal","familiar","deportivo","financiero","intelectual","laboral","gigantes"];
+  const boton = document.getElementById("btnGuardarInicio");
+
+  if(boton.innerText === "Actualizar"){
+    desbloquearCampos(campos);
+    boton.innerText = "Guardar";
+    return;
+  }
+
+  for(let c of campos){
+    if(document.getElementById(c).value.trim() === ""){
+      alert("Debe completar todos los campos.");
+      return;
+    }
+  }
+
+  const hoy = new Date();
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"guardarMetasInicio",
+      nombre:usuarioActual,
+      anio:hoy.getFullYear(),
+      mes:hoy.getMonth()+1,
+      objetivo:objetivo.value,
+      personal:personal.value,
+      familiar:familiar.value,
+      deportivo:deportivo.value,
+      financiero:financiero.value,
+      intelectual:intelectual.value,
+      laboral:laboral.value,
+      gigantes:gigantes.value
+    })
+  })
+  .then(res=>res.json())
+  .then(()=>{
+    bloquearCampos(campos);
+    boton.innerText = "Actualizar";
+    mostrarToast("Metas guardadas correctamente.");
+  });
+
+}
+
+
+function guardarFinalMes(){
+
+  const campos = ["final1","final2","final3","final4"];
+  const boton = document.getElementById("btnGuardarFinal");
+
+  if(boton.innerText === "Actualizar"){
+    desbloquearCampos(campos);
+    boton.innerText = "Guardar";
+    return;
+  }
+
+  for(let c of campos){
+    if(document.getElementById(c).value.trim() === ""){
+      alert("Debe completar todos los campos.");
+      return;
+    }
+  }
+
+  const hoy = new Date();
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"guardarLogrosFinalMes",
+      nombre:usuarioActual,
+      anio:hoy.getFullYear(),
+      mes:hoy.getMonth()+1,
+      victorias:final1.value,
+      hizoDios:final2.value,
+      cumplioMeta:final3.value,
+      mejorar:final4.value
+    })
+  })
+  .then(res=>res.json())
+  .then(()=>{
+    bloquearCampos(campos);
+    boton.innerText = "Actualizar";
+    mostrarToast("Logros guardados correctamente.");
+  });
+
+}
+
+function bloquearCampos(lista){
+  lista.forEach(id=>{
+    document.getElementById(id).disabled = true;
+  });
+}
+
+function desbloquearCampos(lista){
+  lista.forEach(id=>{
+    document.getElementById(id).disabled = false;
+  });
+}
+
+function mostrarToast(mensaje){
+  const toast = document.getElementById("toast");
+  toast.innerText = mensaje;
+  toast.classList.add("show");
+
+  setTimeout(()=>{
+    toast.classList.remove("show");
+  },3000);
+}
+
+</script>
+<div id="toast" class="toast"></div>
+</body>
+</html>
