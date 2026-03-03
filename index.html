@@ -235,10 +235,14 @@ body{
   inset:0;
   background:rgba(0,0,0,0.55);
   backdrop-filter:blur(6px);
-  display:flex;
+  display:none; /* 🔴 ahora inicia oculto */
   align-items:center;
   justify-content:center;
   z-index:99999;
+}
+
+.spinner-overlay.active{
+  display:flex; /* 🔵 solo cuando esté activo */
 }
 
 .spinner{
@@ -743,7 +747,7 @@ function mostrarToast(mensaje){
 
 // Restaurar sesión automáticamente
 window.addEventListener("load", function () {
-
+ ocultarSpinner(); // 🔴 asegura que nunca quede visible
   const usuarioGuardado = localStorage.getItem("usuarioDevocional");
 
   if (usuarioGuardado) {
@@ -797,11 +801,17 @@ function activarAutoGuardadoGlobal() {
   });
 }
   function mostrarSpinner(){
-  document.getElementById("spinnerGlobal").classList.remove("hidden");
+  const spinner = document.getElementById("spinnerGlobal");
+  if(spinner){
+    spinner.classList.add("active");
+  }
 }
 
 function ocultarSpinner(){
-  document.getElementById("spinnerGlobal").classList.add("hidden");
+  const spinner = document.getElementById("spinnerGlobal");
+  if(spinner){
+    spinner.classList.remove("active");
+  }
 }
 </script>
 <div id="toast" class="toast"></div>
