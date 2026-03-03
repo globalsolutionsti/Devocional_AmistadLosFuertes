@@ -689,10 +689,28 @@ window.addEventListener("load", function () {
     document.getElementById("devocional").classList.remove("hidden");
     document.getElementById("nombreUsuario").innerText = usuarioActual;
 
+    // ===== ASIGNAR FECHA DE HOY =====
+    const hoy = new Date();
+    const year = hoy.getFullYear();
+    const month = String(hoy.getMonth()+1).padStart(2,'0');
+    const day = String(hoy.getDate()).padStart(2,'0');
+
+    const fechaInput = document.getElementById("fechaDevocional");
+    fechaInput.value = `${year}-${month}-${day}`;
+
+    // ===== ACTIVAR EVENTO CAMBIO FECHA =====
+    fechaInput.onchange = function(){
+      cargarLecturas();
+      cargarReflexion();
+    };
+
+    // ===== CARGAR DATOS =====
+    cargarLecturas();
+    cargarReflexion();
+
     activarAutoGuardadoGlobal();
   }
 });
-
 // Auto-guardado para TODOS los textarea
 function activarAutoGuardadoGlobal() {
 
