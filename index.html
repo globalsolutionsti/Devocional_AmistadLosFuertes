@@ -278,7 +278,7 @@ body{
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbw6bIPWqr_ISitfuEORaaazx2apF0mgE_weruEiWWv0NQw5FSQ0zMu4aeTmex-lwnNP/exec";
-let usuarioActual = "";
+let usuarioActual = localStorage.getItem("usuarioDevocional") || "";
 
 function login(){
 
@@ -303,7 +303,9 @@ function login(){
     if(respuesta && respuesta.valido){
 
       usuarioActual = respuesta.nombre;
-
+     localStorage.setItem("usuarioDevocional", usuarioActual);
+     activarAutoGuardadoGlobal();
+      
       document.getElementById("login").classList.add("hidden");
       document.getElementById("devocional").classList.remove("hidden");
 
@@ -672,6 +674,46 @@ function mostrarToast(mensaje){
   },3000);
 }
 
+/* ====== PERSISTENCIA SIMPLE ====== */
+
+// Restaurar sesión automáticamente
+window.addEventListener("load", function () {
+
+  const usuarioGuardado = localStorage.getItem("usuarioDevocional");
+
+  if (usuarioGuardado) {
+
+    usuarioActual = usuarioGuardado;
+
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("devocional").classList.remove("hidden");
+    document.getElementById("nombreUsuario").innerText = usuarioActual;
+
+    activarAutoGuardadoGlobal();
+  }
+});
+
+// Auto-guardado para TODOS los textarea
+function activarAutoGuardadoGlobal() {
+
+  if (!usuarioActual) return;
+
+  document.querySelectorAll("textarea").forEach(function (campo) {
+
+    const key = "auto_" + usuarioActual + "_" + campo.id;
+
+    const guardado = localStorage.getItem(key);
+    if (guardado) {
+      campo.value = guardado;
+    }
+
+    campo.addEventListener("input", function () {
+      localStorage.setItem(key, campo.value);
+    });
+
+  });
+}
+  
 </script>
 <div id="toast" class="toast"></div>
 </body>
