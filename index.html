@@ -228,6 +228,33 @@ body{
   border-radius:18px;
 }
 
+/* ===== SPINNER PROFESIONAL ===== */
+
+.spinner-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:99999;
+}
+
+.spinner{
+  width:60px;
+  height:60px;
+  border:6px solid rgba(255,255,255,0.2);
+  border-top:6px solid #2f7df6;
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+
+@keyframes spin{
+  0%{ transform:rotate(0deg); }
+  100%{ transform:rotate(360deg); }
+}
+    
   </style>
 </head>
 
@@ -446,6 +473,10 @@ function accionReflexion(){
     return;
   }
 
+  // 🔵 MOSTRAR SPINNER
+  mostrarSpinner();
+  boton.disabled = true;
+
   fetch(API_URL,{
     method:"POST",
     body: JSON.stringify({
@@ -466,6 +497,15 @@ function accionReflexion(){
       alert("Error al guardar.");
     }
 
+    // 🔴 OCULTAR SPINNER
+    ocultarSpinner();
+    boton.disabled = false;
+
+  })
+  .catch(()=>{
+    ocultarSpinner();
+    boton.disabled = false;
+    alert("Error de conexión.");
   });
 
 }
@@ -583,6 +623,10 @@ function guardarInicioMes(){
 
   const hoy = new Date();
 
+  // 🔵 MOSTRAR SPINNER
+  mostrarSpinner();
+  boton.disabled = true;
+
   fetch(API_URL,{
     method:"POST",
     body: JSON.stringify({
@@ -605,6 +649,15 @@ function guardarInicioMes(){
     bloquearCampos(campos);
     boton.innerText = "Actualizar";
     mostrarToast("Metas guardadas correctamente.");
+
+    // 🔴 OCULTAR SPINNER
+    ocultarSpinner();
+    boton.disabled = false;
+  })
+  .catch(()=>{
+    ocultarSpinner();
+    boton.disabled = false;
+    alert("Error al guardar.");
   });
 
 }
@@ -630,6 +683,10 @@ function guardarFinalMes(){
 
   const hoy = new Date();
 
+  // 🔵 MOSTRAR SPINNER
+  mostrarSpinner();
+  boton.disabled = true;
+
   fetch(API_URL,{
     method:"POST",
     body: JSON.stringify({
@@ -648,10 +705,18 @@ function guardarFinalMes(){
     bloquearCampos(campos);
     boton.innerText = "Actualizar";
     mostrarToast("Logros guardados correctamente.");
+
+    // 🔴 OCULTAR SPINNER
+    ocultarSpinner();
+    boton.disabled = false;
+  })
+  .catch(()=>{
+    ocultarSpinner();
+    boton.disabled = false;
+    alert("Error al guardar.");
   });
 
 }
-
 function bloquearCampos(lista){
   lista.forEach(id=>{
     document.getElementById(id).disabled = true;
@@ -731,8 +796,17 @@ function activarAutoGuardadoGlobal() {
 
   });
 }
-  
+  function mostrarSpinner(){
+  document.getElementById("spinnerGlobal").classList.remove("hidden");
+}
+
+function ocultarSpinner(){
+  document.getElementById("spinnerGlobal").classList.add("hidden");
+}
 </script>
 <div id="toast" class="toast"></div>
+<div id="spinnerGlobal" class="spinner-overlay hidden">
+  <div class="spinner"></div>
+</div>  
 </body>
 </html>
