@@ -534,13 +534,15 @@ function login(){
 
     if(respuesta && respuesta.valido){
 
-      usuarioActual = respuesta.nombre;
-      usuarioRol = respuesta.rol; // El backend debe enviar esto
+     usuarioActual = respuesta.nombre;
+usuarioRol = respuesta.rol;
 
+// 🔴 SIEMPRE OCULTAR PRIMERO
+document.getElementById("btnDashboard").classList.add("hidden");
+
+// 🔵 MOSTRAR SOLO SI ES ADMIN
 if(usuarioRol === "ADMIN"){
   document.getElementById("btnDashboard").classList.remove("hidden");
-}else{
-  document.getElementById("btnDashboard").classList.add("hidden");
 }
      localStorage.setItem("usuarioDevocional", usuarioActual);
      activarAutoGuardadoGlobal();
@@ -974,6 +976,10 @@ fetch(API_URL,{
 .then(rol=>{
   usuarioRol = rol;
 
+  // 🔴 OCULTAR SIEMPRE PRIMERO
+  document.getElementById("btnDashboard").classList.add("hidden");
+
+  // 🔵 MOSTRAR SOLO SI ES ADMIN
   if(usuarioRol === "ADMIN"){
     document.getElementById("btnDashboard").classList.remove("hidden");
   }
