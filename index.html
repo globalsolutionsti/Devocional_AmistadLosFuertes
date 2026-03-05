@@ -324,7 +324,70 @@ body{
   background:#bb2d3b;
   transform:scale(1.05);
 }
-    
+
+/* ===== TABLA DASHBOARD ===== */
+
+.tabla-dashboard{
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  min-width:600px;
+}
+
+.tabla-dashboard th,
+.tabla-dashboard td{
+  padding:6px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,0.1);
+  color:white;
+}
+
+.tabla-dashboard th{
+  background:rgba(255,255,255,0.08);
+  font-weight:600;
+}
+
+.col-usuario{
+  min-width:150px;
+  max-width:150px;
+  width:150px;
+  text-align:left;
+  padding-left:10px;
+  font-weight:bold;
+  color:white;
+}
+
+ /* ===== CALENDARIO RESPONSIVE ===== */
+
+.calendario{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+  margin-top:15px;
+}
+
+.dia-calendario{
+  padding:10px 0;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.dia-activo{
+  background:#00c853;
+  color:white;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.dia-activo:hover{
+  transform:scale(1.05);
+}
+
+.dia-inactivo{
+  background:rgba(255,255,255,0.08);
+  color:#888;
+}   
   </style>
 </head>
 
@@ -391,7 +454,7 @@ body{
   </div>
 
   <div id="tablaUsuarios" style="overflow:auto;"></div>
-
+<div id="calendarioUsuario" style="margin-top:20px;"></div>
 </div>
   
 </div>
@@ -962,42 +1025,93 @@ function cargarDashboard(){
   .then(res=>res.json())
   .then(data=>{
 
-    let tabla = "<table border='1' style='width:100%; text-align:center; border-collapse:collapse;'>";
-    tabla += "<tr><th>Usuario</th>";
+    let tabla = "<div style='overflow:auto;'>";
+tabla += "<table class='tabla-dashboard'>";
+tabla += "<tr><th class='col-usuario'>Usuario</th>";
 
-    for(let d=1; d<=diasEnMes; d++){
-      tabla += "<th>"+d+"</th>";
-    }
-    tabla += "</tr>";
+for(let d=1; d<=diasEnMes; d++){
+  tabla += "<th>"+d+"</th>";
+}
+tabla += "</tr>";
 
-    data.forEach(usuario=>{
-      tabla += "<tr>";
-      tabla += "<td>"+usuario.nombre+"</td>";
+data.forEach(usuario=>{
+  tabla += "<tr>";
+  tabla += `<td class='col-usuario'
+          style="cursor:pointer"
+          onclick="generarCalendario('${usuario.nombre}',${JSON.stringify(usuario.dias)})">
+          ${usuario.nombre}
+          </td>`;
 
-      for(let d=1; d<=diasEnMes; d++){
+  for(let d=1; d<=diasEnMes; d++){
 
-        if(d > diaActual){
-          if(usuario.dias.includes(d)){
-            tabla += "<td style='color:green;'>✔</td>";
-          }else{
-            tabla += "<td>-</td>";
-          }
-        }else{
-          if(usuario.dias.includes(d)){
-            tabla += "<td style='color:green;'>✔</td>";
-          }else{
-            tabla += "<td style='color:red;'>✖</td>";
-          }
-        }
+    if(d > diaActual){
+      if(usuario.dias.includes(d)){
+        tabla += "<td style='color:#00ff88;'>✔</td>";
+      }else{
+        tabla += "<td>-</td>";
       }
+    }else{
+      if(usuario.dias.includes(d)){
+        tabla += "<td style='color:#00ff88;'>✔</td>";
+      }else{
+        tabla += "<td style='color:#ff4d4d;'>✖</td>";
+      }
+    }
+  }
 
-      tabla += "</tr>";
-    });
+  tabla += "</tr>";
+});
 
-    tabla += "</table>";
+tabla += "</table></div>";
 
-    document.getElementById("tablaUsuarios").innerHTML = tabla;
+document.getElementById("tablaUsuarios").innerHTML = tabla;
 
+  });
+}
+
+function generarCalendario(usuario, diasConComentario){
+
+  const fechaSeleccionada = new Date(document.getElementById("fechaDashboard").value);
+  const año = fechaSeleccionada.getFullYear();
+  const mes = fechaSeleccionada.getMonth();
+  const diasEnMes = new Date(año, mes + 1, 0).getDate();
+
+  let html = "<div class='calendario'>";
+
+  for(let d=1; d<=diasEnMes; d++){
+
+    if(diasConComentario.includes(d)){
+      html += `<div class="dia-calendario dia-activo"
+                onclick="verComentario('${usuario}',${d})">${d}</div>`;
+    }else{
+      html += `<div class="dia-calendario dia-inactivo">${d}</div>`;
+    }
+  }
+
+  html += "</div>";
+
+  document.getElementById("calendarioUsuario").innerHTML = html;
+}
+
+function verComentario(usuario, dia){
+
+  const fechaSeleccionada = new Date(document.getElementById("fechaDashboard").value);
+  const año = fechaSeleccionada.getFullYear();
+  const mes = fechaSeleccionada.getMonth() + 1;
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"obtenerComentarioDia",
+      nombre:usuario,
+      anio:año,
+      mes:mes,
+      dia:dia
+    })
+  })
+  .then(res=>res.json())
+  .then(texto=>{
+    alert("Comentario del día "+dia+":\n\n"+texto);
   });
 }
   
