@@ -258,6 +258,50 @@ body{
   0%{ transform:rotate(0deg); }
   100%{ transform:rotate(360deg); }
 }
+.barra-superior{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:25px;
+}
+
+ .usuario-info{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.icono-usuario{
+  width:22px;
+  height:22px;
+  color:#2f7df6;
+}
+
+.icono-salir{
+  width:16px;
+  height:16px;
+}
+
+.btn-salir{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  width:auto;
+  padding:8px 14px;
+  font-size:14px;
+  border-radius:8px;
+  border:none;
+  background:#dc3545;
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:all 0.2s ease;
+}
+
+.btn-salir:hover{
+  background:#bb2d3b;
+  transform:scale(1.05);
+}
     
   </style>
 </head>
@@ -278,7 +322,38 @@ body{
   <div id="devocional" class="card hidden">
 
     <div class="devocional-title">MI DEVOCIONAL</div>
+   <div class="barra-superior">
+
+  <div class="usuario-info">
+    
+    <!-- Ícono usuario -->
+    <svg class="icono-usuario" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 12c2.761 0 5-2.686 5-6s-2.239-6-5-6-5 2.686-5 6 2.239 6 5 6zm0 2c-3.866 0-7 2.686-7 6v2h14v-2c0-3.314-3.134-6-7-6z"/>
+    </svg>
+
     <div id="nombreUsuario" class="usuario-nombre"></div>
+
+  </div>
+
+  <button class="btn-salir" onclick="cerrarSesion()">
+    
+    <!-- Ícono salir -->
+    <svg class="icono-salir" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M10 17l1.41-1.41L8.83 13H20v-2H8.83l2.58-2.59L10 7l-5 5 5 5zM4 19h8v2H4c-1.1 0-2-.9-2-2V5c0-1.1.9-2 2-2h8v2H4v14z"/>
+    </svg>
+
+    Cerrar sesión
+  </button>
+
+</div>
+
+  <div id="nombreUsuario" class="usuario-nombre"></div>
+
+  <button class="btn-salir" onclick="cerrarSesion()">
+    Cerrar sesión
+  </button>
+
+</div>
 
     <div style="margin-bottom:25px;">
       <button onclick="abrirMetas()">Ingresar Objetivos y Metas Mensuales</button>
@@ -813,6 +888,28 @@ function ocultarSpinner(){
     spinner.classList.remove("active");
   }
 }
+function cerrarSesion(){
+
+  const confirmar = confirm("¿Desea cerrar sesión?");
+
+  if(!confirmar) return;
+
+  // 🔴 borrar sesión guardada
+  localStorage.removeItem("usuarioDevocional");
+
+  // 🔴 limpiar variable global
+  usuarioActual = "";
+
+  // 🔴 limpiar PIN por seguridad
+  document.getElementById("pin").value = "";
+
+  // 🔴 volver al login
+  document.getElementById("devocional").classList.add("hidden");
+  document.getElementById("login").classList.remove("hidden");
+
+}
+
+  
 </script>
 <div id="toast" class="toast"></div>
 <div id="spinnerGlobal" class="spinner-overlay hidden">
