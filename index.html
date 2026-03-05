@@ -455,12 +455,45 @@ body{
 
   <div id="tablaUsuarios" style="overflow:auto;"></div>
 <div id="calendarioUsuario" style="margin-top:20px;"></div>
+<hr style="margin:40px 0; border-color:rgba(255,255,255,0.1);">
+
+<div id="panelDetalle" style="text-align:left;">
+
+  <h3 style="color:white; text-align:center; margin-bottom:20px;">
+    📌 DETALLE MENSUAL POR USUARIO
+  </h3>
+
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+    
+    <select id="selectUsuario" style="flex:1; padding:12px; border-radius:10px; font-size:14px;">
+      <option value="">Seleccionar Usuario</option>
+    </select>
+
+    <select id="selectMes" style="flex:1; padding:12px; border-radius:10px; font-size:14px;">
+      <option value="">Seleccionar Mes</option>
+    </select>
+
+    <button onclick="cargarDetalleUsuario()" style="width:100%; margin-top:10px;">
+      Consultar
+    </button>
+
+  </div>
+
+  <div id="contenedorMetas"></div>
+  <div id="contenedorLogros" style="margin-top:25px;"></div>
+  <div id="calendarioDetalle" style="margin-top:25px;"></div>
+
+</div>
+
+
+
+  
 </div>
   
 </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbw-5LCnXS5kde-Fb4A1qurAz5K8zp-aUUZXCownh2pbmhvi6uNAXG68LzrTfgNx1ksv/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbytGJbCWOFBEx-OoWJqdQbVBeDCy9MZSy384q6JFXy1gN0Ms5aCiDgiavyjII4R5Hy3/exec";
 let usuarioActual = localStorage.getItem("usuarioDevocional") || "";
 let usuarioRol = "";
 function login(){
@@ -1065,6 +1098,21 @@ data.forEach(usuario=>{
 tabla += "</table></div>";
 
 document.getElementById("tablaUsuarios").innerHTML = tabla;
+// ===== CARGAR SELECT USUARIOS =====
+let select = document.getElementById("selectUsuario");
+select.innerHTML = "<option value=''>Seleccionar Usuario</option>";
+
+data.forEach(u=>{
+  select.innerHTML += `<option value="${u.nombre}">${u.nombre}</option>`;
+});
+
+// ===== CARGAR SELECT MESES =====
+let selectMes = document.getElementById("selectMes");
+selectMes.innerHTML = "<option value=''>Seleccionar Mes</option>";
+
+for(let m=1; m<=12; m++){
+  selectMes.innerHTML += `<option value="${m}">${m}</option>`;
+}
 
   });
 }
@@ -1112,6 +1160,126 @@ function verComentario(usuario, dia){
   .then(res=>res.json())
   .then(texto=>{
     alert("Comentario del día "+dia+":\n\n"+texto);
+  });
+}
+
+function cargarDetalleUsuario(){
+
+  const usuario = document.getElementById("selectUsuario").value;
+  const mes = document.getElementById("selectMes").value;
+
+  if(!usuario || !mes){
+    alert("Debe seleccionar usuario y mes.");
+    return;
+  }
+
+  const anio = new Date(document.getElementById("fechaDashboard").value).getFullYear();
+
+  // ===== OBTENER METAS INICIO =====
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"obtenerMetasInicio",
+      nombre:usuario,
+      anio:anio,
+      mes:mes
+    })
+  })
+  .then(res=>res.json())
+  .then(metas=>{
+
+    if(metas){
+
+      document.getElementById("contenedorMetas").innerHTML = `
+        <h4 style="color:#00ffcc;">🎯 Metas Inicio Mes</h4>
+        <div style="color:white; font-size:14px; line-height:1.6;">
+          <b>Objetivo:</b> ${metas.objetivo || "-"}<br>
+          <b>Personal:</b> ${metas.personal || "-"}<br>
+          <b>Familiar:</b> ${metas.familiar || "-"}<br>
+          <b>Deportivo:</b> ${metas.deportivo || "-"}<br>
+          <b>Financiero:</b> ${metas.financiero || "-"}<br>
+          <b>Intelectual:</b> ${metas.intelectual || "-"}<br>
+          <b>Laboral:</b> ${metas.laboral || "-"}<br>
+          <b>Gigantes:</b> ${metas.gigantes || "-"}
+        </div>
+      `;
+
+    }else{
+      document.getElementById("contenedorMetas").innerHTML =
+        "<p style='color:#888;'>No hay metas registradas.</p>";
+    }
+
+  });
+
+  // ===== OBTENER LOGROS =====
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"obtenerLogrosFinalMes",
+      nombre:usuario,
+      anio:anio,
+      mes:mes
+    })
+  })
+  .then(res=>res.json())
+  .then(logros=>{
+
+    if(logros){
+
+      document.getElementById("contenedorLogros").innerHTML = `
+        <h4 style="color:#00ffcc;">🏆 Logros Fin Mes</h4>
+        <div style="color:white; font-size:14px; line-height:1.6;">
+          <b>Victorias:</b> ${logros.victorias || "-"}<br>
+          <b>¿Cómo lo hizo Dios?:</b> ${logros.hizoDios || "-"}<br>
+          <b>¿Cumplió Meta?:</b> ${logros.cumplioMeta || "-"}<br>
+          <b>Mejorar:</b> ${logros.mejorar || "-"}
+        </div>
+      `;
+
+    }else{
+      document.getElementById("contenedorLogros").innerHTML =
+        "<p style='color:#888;'>No hay logros registrados.</p>";
+    }
+
+  });
+
+  generarCalendarioDetalle(usuario, anio, mes);
+}
+function generarCalendarioDetalle(usuario, anio, mes){
+
+  fetch(API_URL,{
+    method:"POST",
+    body: JSON.stringify({
+      accion:"obtenerResumenMensual",
+      anio:anio,
+      mes:mes
+    })
+  })
+  .then(res=>res.json())
+  .then(data=>{
+
+    const usuarioData = data.find(u=>u.nombre===usuario);
+    if(!usuarioData) return;
+
+    const diasConComentario = usuarioData.dias;
+    const diasEnMes = new Date(anio, mes, 0).getDate();
+
+    let html = "<div class='calendario'>";
+
+    for(let d=1; d<=diasEnMes; d++){
+
+      if(diasConComentario.includes(d)){
+        html += `<div class="dia-calendario dia-activo"
+                  onclick="verComentario('${usuario}',${d})">${d}</div>`;
+      }else{
+        html += `<div class="dia-calendario dia-inactivo">${d}</div>`;
+      }
+    }
+
+    html += "</div>";
+
+    document.getElementById("calendarioDetalle").innerHTML = html;
+
   });
 }
   
