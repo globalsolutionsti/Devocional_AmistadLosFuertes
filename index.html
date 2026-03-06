@@ -402,6 +402,38 @@ body{
   font-weight:600;
   text-align:center;
 }
+
+.calendario{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:6px;
+  margin-top:10px;
+}
+
+.dia-calendario{
+  padding:12px 0;
+  border-radius:10px;
+  font-size:14px;
+  font-weight:600;
+  text-align:center;
+}
+
+.dia-activo{
+  background:#00c853;
+  color:white;
+  cursor:pointer;
+}
+
+.dia-activo:hover{
+  transform:scale(1.05);
+}
+
+.dia-inactivo{
+  background:rgba(255,255,255,0.08);
+  color:#666;
+}
+
+    
   </style>
 </head>
 
@@ -545,12 +577,12 @@ function login(){
      usuarioActual = respuesta.nombre;
 usuarioRol = respuesta.rol;
 
-// 🔴 SIEMPRE OCULTAR PRIMERO
-document.getElementById("btnDashboard").classList.add("hidden");
+// 🔴 OCULTAR SIEMPRE
+document.getElementById("btnDashboard").style.display = "none";
 
 // 🔵 MOSTRAR SOLO SI ES ADMIN
 if(usuarioRol === "ADMIN"){
-  document.getElementById("btnDashboard").classList.remove("hidden");
+  document.getElementById("btnDashboard").style.display = "flex";
 }
      localStorage.setItem("usuarioDevocional", usuarioActual);
      activarAutoGuardadoGlobal();
@@ -985,12 +1017,12 @@ fetch(API_URL,{
   usuarioRol = rol;
 
   // 🔴 OCULTAR SIEMPRE PRIMERO
-  document.getElementById("btnDashboard").classList.add("hidden");
+  document.getElementById("btnDashboard").style.display = "none";
 
   // 🔵 MOSTRAR SOLO SI ES ADMIN
   if(usuarioRol === "ADMIN"){
-    document.getElementById("btnDashboard").classList.remove("hidden");
-  }
+  document.getElementById("btnDashboard").style.display = "flex";
+}
 });
     
     document.getElementById("login").classList.add("hidden");
@@ -1294,7 +1326,7 @@ function generarCalendarioDetalle(usuario, anio, mes){
   .then(res=>res.json())
   .then(data=>{
 
-    const usuarioData = data.find(u=>u.nombre===usuario);
+    const usuarioData = data.find(u=>u.nombre === usuario);
     if(!usuarioData) return;
 
     const diasConComentario = usuarioData.dias;
@@ -1308,11 +1340,12 @@ function generarCalendarioDetalle(usuario, anio, mes){
     const nombreMes = nombresMeses[mes-1];
 
     let html = `
-      <h3 style="text-align:center; color:white; margin-bottom:10px;">
+      <h3 style="text-align:center; color:white; margin-bottom:15px;">
         ${nombreMes} ${anio}
       </h3>
 
       <div class="calendario">
+
         <div class="dia-header">L</div>
         <div class="dia-header">M</div>
         <div class="dia-header">M</div>
@@ -1332,18 +1365,22 @@ function generarCalendarioDetalle(usuario, anio, mes){
     for(let d=1; d<=diasEnMes; d++){
 
       if(diasConComentario.includes(d)){
+
         html += `
           <div class="dia-calendario dia-activo"
                onclick="verComentario('${usuario}',${d})">
-            ${d}
+               ${d}
           </div>
         `;
+
       }else{
+
         html += `
           <div class="dia-calendario dia-inactivo">
             ${d}
           </div>
         `;
+
       }
 
     }
