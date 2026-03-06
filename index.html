@@ -1122,7 +1122,7 @@ tabla += "</table></div>";
 document.getElementById("tablaUsuarios").innerHTML = tabla;
 // ===== CARGAR SELECT USUARIOS =====
 let select = document.getElementById("selectUsuario");
-select.innerHTML = "<option value=''>Seleccionar Usuario</option>";
+select.innerHTML = "<option value=''>Seleccionar Servidor</option>";
 
 data.forEach(u=>{
   select.innerHTML += `<option value="${u.nombre}">${u.nombre}</option>`;
