@@ -1085,21 +1085,38 @@ function ocultarSpinner(){
   }
 }
 
-  function abrirDashboard(){
+function abrirDashboard(){
+
   document.getElementById("devocional").classList.add("hidden");
   document.getElementById("dashboard").classList.remove("hidden");
 
   const hoy = new Date().toISOString().split("T")[0];
   document.getElementById("fechaDashboard").value = hoy;
 
+  limpiarDetalleUsuario(); // ⭐ LIMPIA EL PANEL
+
   cargarDashboard();
 }
 
 function volverDevocional(){
+
+  limpiarDetalleUsuario(); // ⭐ LIMPIA EL PANEL
+
   document.getElementById("dashboard").classList.add("hidden");
   document.getElementById("devocional").classList.remove("hidden");
+
 }
 
+  function limpiarDetalleUsuario(){
+
+  document.getElementById("selectUsuario").value = "";
+  document.getElementById("selectMes").value = "";
+
+  document.getElementById("contenedorMetas").innerHTML = "";
+  document.getElementById("contenedorLogros").innerHTML = "";
+  document.getElementById("calendarioDetalle").innerHTML = "";
+
+}
 function cargarDashboard(){
 
   const fechaSeleccionada = new Date(document.getElementById("fechaDashboard").value);
