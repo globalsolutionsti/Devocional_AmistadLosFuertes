@@ -1324,11 +1324,20 @@ function generarCalendarioDetalle(usuario, anio, mes){
     for(let d=1; d<=diasEnMes; d++){
 
       if(diasConComentario.includes(d)){
-        html += `<div class="dia-calendario dia-activo"
-                  onclick="verComentario('${usuario}',${d})">${d}</div>`;
+        html += `
+          <div class="dia-calendario dia-activo"
+               onclick="verComentario('${usuario}',${d})">
+            ${d}
+          </div>
+        `;
       }else{
-        html += `<div class="dia-calendario dia-inactivo">${d}</div>`;
+        html += `
+          <div class="dia-calendario dia-inactivo">
+            ${d}
+          </div>
+        `;
       }
+
     }
 
     html += "</div>";
